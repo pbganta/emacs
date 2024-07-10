@@ -1,0 +1,453 @@
+* list of init files
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+#+END_SRC
+
+* interface tweaks
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)   ;; No startup page
+  (setq initial-scratch-message nil) ;; No *scratch* buffer message
+  (global-hl-line-mode t)           ;; provides highlighted line at cursor position
+  (menu-bar-mode 0)                 ;; No menubar
+  (tool-bar-mode 0)                 ;; No toolbar
+  (tooltip-mode  0)                 ;; No tooltip
+  (scroll-bar-mode 0)                ;; Noe scrollbar
+  (blink-cursor-mode 1)              ;; No blinking cursor
+  (setq pop-up-windows nil)         ;; No popup windows
+  (show-paren-mode 1)                ;; Shows paranthesis
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (setq x-select-enable-clipboard t)
+  (setq confirm-kill-emacs 'y-or-n-p)
+  (setq ring-bell-function 'ignore)
+  (setq visible-bell 1)
+  (global-set-key (kbd "<f5>") 'revert-buffer)
+  (defalias 'list-buffers 'ibuffer)
+  (global-set-key (kbd "C-<right>") 'forward-sentence)
+  (setq mouse-drag-copy-region t)   ;; copies text selected by mouse
+  (setq package-check-signature nil)
+  (desktop-save-mode 1)
+  #+END_SRC
+* trypackage
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+  :ensure t)
+#+END_SRC
+
+* which-key
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+  :ensure t
+  :config
+  (which-key-mode))
+#+END_SRC
+
+* Shift change window function
+#+BEGIN_SRC emacs-lisp
+  (when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
+
+  (global-set-key (kbd "C-c <left>")  'windmove-left)
+  (global-set-key (kbd "C-c <right>") 'windmove-right)
+  (global-set-key (kbd "C-c <up>")    'windmove-up)
+  (global-set-key (kbd "C-c <down>")  'windmove-down)
+
+  (add-hook 'org-shiftup-final-hook 'windmove-up)
+  (add-hook 'org-shiftleft-final-hook 'windmove-left)
+  (add-hook 'org-shiftdown-final-hook 'windmove-down)
+  (add-hook 'org-shiftright-final-hook 'windmove-right)
+
+  (global-set-key (kbd "M-o") 'ace-window)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+#+END_SRC
+
+* counsel
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+  :ensure t
+  :bind
+  (("M-y" . counsel-yank-pop)
+  :map ivy-minibuffer-map
+  ("M-y" . ivy-next-line)))
+
+  (use-package ivy
+  :ensure t
+  :diminish (ivy-mode)
+  :bind (("C-x b" . ivy-switch-buffer))
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-display-style 'fancy))
+
+  (use-package swiper
+  :ensure t
+  :bind (("C-s" . swiper)
+  ("C-r" . swiper)
+  ("C-c C-r" . ivy-resume)
+  ("M-x" . counsel-M-x)
+  ("C-x C-f" . counsel-find-file))
+  :config
+  (progn
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-display-style 'fancy)
+  (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+  ))
+#+END_SRC
+
+* company (another Autocomplete mode)
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    (setq company-idle-delay 0.1)
+    (setq company-minimum-prefix-length 3)
+    (global-company-mode t))
+
+  (use-package company-irony
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-irony))
+
+  (use-package irony
+    :ensure t
+    :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  (use-package irony-eldoc
+    :ensure t
+    :config
+    (add-hook 'irony-mode-hook #'irony-eldoc))
+
+#+END_SRC
+
+* avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+	       :ensure t
+	       :bind ("M-s" . avy-goto-word-1))
+#+END_SRC
+
+* auto-complete
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package auto-complete
+  ;; :ensure t
+  ;; :init
+  ;; (progn
+  ;; (ac-config-default)
+  ;; (add-to-list 'ac-modes 'org-mode)
+  ;; (ac-set-trigger-key "TAB")
+  ;; (global-auto-complete-mode t)))
+#+END_SRC
+
+* color-theme
+#+BEGIN_SRC emacs-lisp
+  (use-package zenburn-theme
+  :ensure t
+  :config (load-theme 'zenburn t))
+
+  ;; (use-package wheatgrass
+  ;; :ensure t
+  ;; :config (load-theme 'wheatgrass t))
+
+#+END_SRC
+
+* spellcheck
+#+BEGIN_SRC emacs-lisp
+  ;; ; already ispell is installed in emacs and we have to assign the dictionary that we want to use
+  ;; (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  ;; (setq ispell-dictionary "en_US")    ;set the default dictionary
+  ;; (add-hook 'LaTeX-mode-hook 'ispell)
+#+END_SRC
+
+* flycheck
+#+BEGIN_SRC emacs-lisp
+      (use-package flycheck
+      :ensure t
+      :init
+      (global-flycheck-mode t)
+      (setq flycheck-shellcheck-follow-sources nil))
+  #+END_SRC
+
+* Eglot
+#+BEGIN_SRC emacs-lisp
+(use-package eglot
+  :bind (:map eglot-mode-map
+              ("C-c d" . eldoc)
+              ("C-c a" . eglot-code-actions)
+              ("C-c f" . flymake-show-buffer-diagnostics)
+              ("C-c r" . eglot-rename)))
+#+END_SRC
+
+* Python
+#+BEGIN_SRC emacs-lisp
+  (require 'tree-sitter)
+  (require 'tree-sitter-langs)
+  (setq py-python-command "python3")
+  (setq python-shell-interpreter "python3")
+
+  (add-to-list 'major-mode-remap-alist
+               '(c-mode . c-ts-mode)
+               '(python-mode . python-ts-mode))
+  
+  (use-package python
+    :bind (:map python-ts-mode-map
+    ("<f5>" . recompile)
+    ("<f6>" . eglot-format))
+    :hook ((python-ts-mode . eglot-ensure)
+    (python-ts-mode . company-mode))
+    :mode (("\\.py\\'" . python-ts-mode)))
+
+  ;; (use-package flycheck-pyflakes
+  ;;   :ensure t
+  ;;   :init
+  ;;   (add-to-list 'flycheck-disabled-checkers 'python-flake8)
+  ;;   (add-to-list 'flycheck-disabled-checkers 'python-pylint))
+#+END_SRC
+
+* yassnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode 1))
+
+  (use-package yasnippet-snippets
+  :ensure t)
+#+END_SRC
+
+* undo tree
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode))
+#+END_SRC
+
+* misc packages
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package iedit
+  ;; :ensure t)
+
+  ;; (use-package multiple-cursors
+  ;; :ensure t)
+#+END_SRC
+
+* Load other files
+#+BEGIN_SRC emacs-lisp
+  ; (defun load-if-exists (f)
+  ; "load the elisp file only if it exists and is readable"
+  ;(if (file-readable-p f)
+  ; (load-file f)))
+  ; (load-if-exists "~/Sync/shared/mu4econfig.el")
+  ; (load-if-exists "~/Sync/shared/not-for-github.el")
+#+END_SRC
+* shortcuts to files
+#+BEGIN_SRC emacs-lisp
+  ;; shortcuts to load files
+  ;; (global-set-key (kbd "\e\ei")
+  ;; (lambda () (interactive) (find-file "~/Documents/orgfiles/i.org")))
+
+  ;; (global-set-key (kbd "\e\el")
+  ;; (lambda () (interactive) (find-file "~/Documents/orgfiles/links.org")))
+
+  ;; (global-set-key (kbd "\e\ec")
+  ;; (lambda () (interactive) (find-file "~/Documents/orgfiles/myinit.org")))
+
+#+END_SRC
+
+* Org-mode
+    #+BEGIN_SRC emacs-lisp
+       (use-package org
+       :ensure t
+       :pin org
+       :custom (org-modules '(org-habit)))
+
+       ;use-package org-bullets
+       (use-package org-bullets
+       :ensure t
+       :config
+       (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+
+* Diasble mouse
+#+BEGIN_SRC emacs-lisp
+;  (use-package disable-mouse
+;  :ensure t
+;  :init
+;  (global-disable-mouse-mode))
+#+END_SRC
+* Programming
+#+BEGIN_SRC emacs-lisp
+  (use-package ggtags
+  :ensure t
+  :config
+  (add-hook 'c-mode-common-hook
+  (lambda ()
+  (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+  (ggtags-mode-1)))))
+#+END_SRC
+* Dumb jump
+  #+BEGIN_SRC emacs-lisp
+    (use-package dumb-jump
+		 :bind (("M-g o" . dumb-jump-go-other-window)
+			("M-g j" . dumb-jump-go)
+			("M-g x" . dumb-jump-go-prefer-external)
+			("M-g z" . dumb-jump-go-prefer-external-other-window))
+		 :config 
+		 ;; (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+		 :init
+		 (dumb-jump-mode)
+		 :ensure
+		 )
+  #+END_SRC
+* IBUFFER
+  #+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("dired" (mode . dired-mode))
+                 ("org" (name . "^.*org$"))
+                 ("magit" (mode . magit-mode))
+                 ("IRC" (or (mode . circe-channel-mode) (mode . circe-server-mode)))
+                 ("web" (or (mode . web-mode) (mode . js2-mode)))
+                 ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+                 ("mu4e"  (or (mode . mu4e-compose-mode) (name . "\*mu4e\*")))
+                 ("programming" (or
+                                 (mode . clojure-mode)
+                                 (mode . clojurescript-mode)
+                                 (mode . python-mode)
+                                 (mode . c++-mode)))
+                 ("emacs" (or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$")))
+                 ))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")))
+  ;; Don't show filter groups if there are no buffers in that group
+  (setq ibuffer-show-empty-filter-groups nil)
+
+  ;; Don't ask for confirmation to delete marked buffers
+  (setq ibuffer-expert t)
+  #+END_SRC
+* Latex
+  #+BEGIN_SRC emacs-lisp
+        (use-package tex
+        :defer t
+        :ensure auctex
+        :config
+        (setq TeX-auto-save t)
+        (setq TeX-parse-self t)
+        (setq-default TeX-master nil)
+        (setq LaTeX-indent-level 4)
+        ;(setq TeX-PDF-mode t)
+        (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+        (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+        (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+        (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+        ;; Activate nice interface between RefTeX and AUCTeX
+        ;(setq reftex-plug-into-AUCTeX t)
+        ;(add-hook 'LaTeX-mode-hook (lambda ()
+        ;(load "auctex.el" nil t t)
+        ;(load "preview-latex.el" nil t t)
+        ;))
+        )
+  #+END_SRC
+* company-latex
+#+BEGIN_SRC emacs-lisp
+  (use-package company-math
+  :ensure t
+  :config
+  (add-hook 'LaTeX-mode-hook (lambda ()
+  (add-to-list 'company-backends 'company-math-symbols-latex)
+  (add-to-list 'company-backends 'company-latex-commands))))
+
+  ;; (use-package company-auctex
+  ;; :ensure t
+  ;; :config
+  ;; (company-auctex-init))
+ #+END_SRC
+* bindings
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load 'tex
+  '(progn
+  (defun save-compile-latex ()
+  "Save and compile latex document"
+  (interactive)
+  (save-buffer)
+  (TeX-command-sequence t t))
+  (defun complete-if-no-space ()
+  (interactive)
+  (let ((cb (string (char-before))))
+  (if (or (equal cb " ") (equal (point) (line-beginning-position)))
+  (tab-to-tab-stop)
+  (TeX-complete-symbol))))
+  (add-hook 'LaTeX-mode-hook (lambda ()
+  (define-key LaTeX-mode-map (kbd "<f5>") 'save-compile-latex)
+  (define-key LaTeX-mode-map (kbd "<f7>") 'preview-clearout-buffer)
+  (define-key LaTeX-mode-map (kbd "TAB") 'complete-if-no-space)
+  (define-key LaTeX-mode-map (kbd "<tab>") 'complete-if-no-space)))))
+ #+END_SRC
+* gnuplot
+  #+BEGIN_SRC emacs-lisp
+  (use-package gnuplot-mode
+  :ensure t)
+  (add-hook 'gnuplot-mode-hook
+  (lambda ()
+  (flyspell-prog-mode)
+  (add-hook 'before-save-hook
+  'whitespace-cleanup nil t)))
+  (setq auto-mode-alist
+  (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
+
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
+  (setq auto-mode-alist (append '(("\\.gp\\'" . gnuplot-mode))
+  auto-mode-alist))
+ #+END_SRC
+* cp2k
+  #+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/not_elpa/")
+  (require 'cp2k-mode nil 'noerror)
+  (add-to-list 'auto-mode-alist '("\\.inp\\'" . cp2k-mode))
+  #+END_SRC
+* VMD
+  #+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.vmd\\'" . tcl-mode))
+  #+END_SRC
+  
+* persistent-scratch
+  #+BEGIN_SRC emacs-lisp
+  ;; persistent-scratch
+    (use-package persistent-scratch
+      :ensure t
+      :config
+      (persistent-scratch-setup-default))
+  #+END_SRC
+* Bookmarks
+  #+BEGIN_SRC emacs-lisp
+(use-package bm
+  :bind (("<C-f2>" . bm-toggle)
+         ("<f2>" . bm-next)
+         ("<S-f2>" . bm-previous)))
+  #+END_SRC
+* Other interface
+ #+BEGIN_SRC emacs-lisp
+ (setq-default cursor-type 'bar) 
+ (set-cursor-color "#FF0000") 
+ #+END_SRC
+* lammps
+#+BEGIN_SRC emacs-lisp
+(use-package lammps-mode
+:ensure t
+:init
+(autoload 'lammps-mode "lammps-mode.el" "LAMMPS mode." t)
+(setq auto-mode-alist (append auto-mode-alist
+                              '(("\\.lmp\\'" . lammps-mode))
+                              '(("\\.lmpin\\'" . lammps-mode))
+                              )))
+#+END_SRC
+
