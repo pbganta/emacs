@@ -1,0 +1,64 @@
+* Movement  
+
+C-x C-x - swaps point and mark 
+
+C-u C-SPC - mark ring
+
+M-a, M-e - sentence end and start
+
+C-Downarrow, C-uparrow - paragraph end and start 
+
+C-M-v - scrolls other window
+
+C-M-f, C-M-b - moves as per the brackerts search-expression sexp.,. just try it.,. imp
+
+C-M-a, C-M-e - function definition starting and ending 
+
+* Selection
+
+C-M-u, C-M-SPC - select content between brackets
+
+* Hide unhide
+
+C-x n n - hide everything except selected region
+
+C-x n w - show again everything after hiding
+
+* Shell
+
+M-! give shell command to execute single commands; cp ./file ./file_2 will copy file
+
+* Indentation 
+
+M-^ move current line to above line
+
+C-M-o split current line at point 
+
+C-x Tab - to move region for indentation
+
+C-SPC C-SPC - sets point without activating selection
+
+C-u 100 command -  to run a command for 100 times 
+
+https://www.gnu.org/software/emacs/manual/html_node/emacs/Indentation-Commands.html
+
+* Rectangles
+
+C-x r t string RET - insert string 
+C-x r c - clear reactangle (inplace clear)
+C-r r o - insert space and moves rectangle content right side
+C-x SPC - rectangle selection mode
+
+* Dired commands 
+^ - move directory up; v visit directory
+m - mark, u - unmark, D -delete files, C- copy files
+v - read only files, o - open file
+M-} M-{  - move between marked files
+
+** other stuff
+= - compare file at point to marked one
+marked files with given extension * ., * /, * @
+
+* Documentation
+
+C-h m - to see shortcuts for the major mode you are in V V V IMPORTANT 

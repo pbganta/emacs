@@ -1,0 +1,662 @@
+* list of init files
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+#+END_SRC
+
+* interface tweaks
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)   ;; No startup page
+  (setq initial-scratch-message nil) ;; No *scratch* buffer message
+  (global-hl-line-mode t)           ;; provides highlighted line at cursor position
+  (menu-bar-mode 0)                 ;; No menubar
+  (tool-bar-mode 0)                 ;; No toolbar
+  (tooltip-mode  0)                 ;; No tooltip
+  (scroll-bar-mode 0)                ;; Noe scrollbar
+  (blink-cursor-mode 1)              ;; No blinking cursor
+  (setq pop-up-windows nil)         ;; No popup windows
+  (show-paren-mode 1)                ;; Shows paranthesis
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (setq x-select-enable-clipboard t)
+  (setq confirm-kill-emacs 'y-or-n-p)
+  (setq ring-bell-function 'ignore)
+  (setq visible-bell 1)
+  (global-set-key (kbd "<f5>") 'revert-buffer)
+  (defalias 'list-buffers 'ibuffer)
+  (global-set-key (kbd "C-<right>") 'forward-sentence)
+  (setq mouse-drag-copy-region t)   ;; copies text selected by mouse
+  (setq package-check-signature nil)
+  (setq electric-indent-mode nil)
+  (setq electric-pair-mode t)
+  (setq-default cursor-type 'bar)
+  (set-cursor-color "#FF0000")
+  (setq frame-title-format "%b <%f>")
+  (setq auto-save-default nil)
+  (setq create-lockfiles nil)
+  (setq column-number-mode t)
+  (delete-selection-mode 1)  ;; make typing delete/overwrites selected text
+  (desktop-save-mode 1)
+  (show-paren-mode 1)
+  (setq show-paren-style 'parenthesis)
+  (setq tab-always-indent 'complete)
+  (add-to-list 'completion-styles 'initials t)
+  (global-unset-key (kbd "C-x C-z"))
+  (global-unset-key (kbd "C-z"))
+  (global-set-key (kbd "C-<") 'previous-buffer)
+  (global-set-key (kbd "C->") 'next-buffer)
+#+END_SRC
+
+* create backup files
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist `(("." . "~/.emacs.d/mybackupfiles/")))
+  (setq backup-by-copying t)
+  (setq delete-old-versions t
+        kept-new-versions 6
+        kept-old-versions 2
+        version-control t)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/myundofiles/")))
+#+END_SRC
+
+* trypackage
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t)
+#+END_SRC
+
+* which-key
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t
+    :commands (which-key-mode)
+    :init
+    (which-key-mode))
+#+END_SRC
+
+* shift change window function
+#+BEGIN_SRC emacs-lisp
+  ;; (when (fboundp 'windmove-default-keybindings)
+  ;; (windmove-default-keybindings))
+  (use-package ace-window
+    :ensure t
+    :init
+    (setq aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9)
+          aw-char-position 'top-left
+          aw-ignore-current nil
+          aw-leading-char-style 'char
+          aw-scope 'frame)
+    (setq aw-background nil)
+    :bind (("M-o" . ace-window)
+           ("M-O" . ace-swap-window)))
+#+END_SRC
+
+*  counsel ivy swiper
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :ensure t
+    :bind
+    (("M-y" . counsel-yank-pop)
+     :map ivy-minibuffer-map
+     ("M-y" . ivy-next-line)))
+
+  (use-package ivy
+    :ensure t
+    :diminish (ivy-mode)
+    :bind (("C-x b" . ivy-switch-buffer))
+    :config
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-display-style 'fancy))
+
+  (use-package swiper
+    :ensure t
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-c C-r" . ivy-resume)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file))
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-display-style 'fancy)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+      ))
+#+END_SRC
+
+* company (another Autocomplete mode)
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    (setq company-idle-delay 0.1)
+    (setq company-minimum-prefix-length 3)
+    (global-company-mode t))
+
+  (use-package company-terraform
+    :ensure t
+    :config
+    (setq company-idle-delay 0.1)
+    (setq company-minimum-prefix-length 3)
+    (company-terraform-init))
+
+  (use-package company-irony
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-irony))
+
+  (use-package irony
+    :ensure t
+    :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  (use-package irony-eldoc
+    :ensure t
+    :config
+    (add-hook 'irony-mode-hook #'irony-eldoc))
+#+END_SRC
+
+* avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind ("M-s" . avy-goto-word-0))
+#+END_SRC
+
+* color-theme
+#+BEGIN_SRC emacs-lisp
+  (use-package zenburn-theme
+    :ensure t
+    :config (load-theme 'zenburn t))
+#+END_SRC
+
+* flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init
+    (global-flycheck-mode 0)
+    (setq flycheck-shellcheck-follow-sources nil))
+#+END_SRC
+
+* Eglot
+#+BEGIN_SRC emacs-lisp
+  (use-package eglot
+    :bind (:map eglot-mode-map
+                ("C-c c d" . eldoc)
+                ("C-c c a" . eglot-code-actions)
+                ("C-c c f" . flymake-show-buffer-diagnostics)
+                ("C-c c r" . eglot-rename)))
+#+END_SRC
+
+* treesit-auto
+#+BEGIN_SRC emacs-lisp
+  (use-package treesit-auto
+    :ensure t
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
+  ;; the package treesit-fold is manually cloned from git clone https://github.com/emacs-tree-sitter/treesit-fold /path/to/lib
+  ;; (add-to-list 'load-path "/home/gpb/.emacs.d/treesit-fold/")
+  ;; (require 'treesit-fold)
+  ;; (global-set-key (kbd "C-c C-SPC")  'treesit-fold-toggle)
+  ;; (treesit-fold-mode 1)
+#+END_SRC
+
+* Python
+#+BEGIN_SRC emacs-lisp
+                                          ;(require 'tree-sitter)
+                                          ;(require 'tree-sitter-langs)
+  (setq py-python-command "python3")
+  (setq python-shell-interpreter "python3")
+
+  (add-to-list 'major-mode-remap-alist
+               '(c-mode . c-ts-mode)
+               '(python-mode . python-ts-mode))
+
+  (use-package python
+    :ensure t
+    :bind (:map python-ts-mode-map
+                ("<f5>" . recompile)
+                ("<f6>" . eglot-format))
+    :hook ((python-ts-mode . eglot-ensure)
+           (python-ts-mode . company-mode))
+    :mode (("\\.py\\'" . python-ts-mode)))
+#+END_SRC
+
+* yassnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+    :config
+    (setq yas-snippet-dirs '("~/.emacs.d/elpa/yasnippet-snippets-1.1/snippets/"
+                             "~/.emacs.d/snippets"))
+    (yas-global-mode 1))
+
+  (use-package yasnippet-snippets
+    :ensure t)
+
+#+END_SRC
+
+* undo tree
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :init
+    (global-undo-tree-mode))
+#+END_SRC
+
+* terraform-mode
+#+BEGIN_SRC emacs-lisp
+  (setq lsp-keymap-prefix "C-c l")
+  (use-package lsp-mode
+    :ensure t
+    :config
+    (setq lsp-disabled-clients '(tfls))
+    (setq lsp-terraform-ls-prefill-required-fields t)
+    (setq lsp-terraform-ls-validate-on-save t)
+    (setq lsp-terraform-ls-enable-show-reference t)
+    (setq lsp-terraform-ls-validate-on-save t)
+    (setq lsp-semantic-tokens-enable t)
+    (setq lsp-semantic-tokens-honor-refresh-requests t)
+    (setq lsp-signature-doc-lines 5)
+    (setq lsp-idle-delay 0.5)
+    (setq lsp-prefer-capf t)
+    (setq lsp-keep-workspace-alive nil)
+    :hook ((terraform-mode . lsp-deferred)))
+  ;; (setq lsp-terraform-ls-enable-show-reference t)
+                                          ; (setq lsp-enable-links t)
+
+  (with-eval-after-load 'lsp-mode
+    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
+
+
+  (use-package terraform-mode
+    :ensure t
+    :custom (terraform-indent-level 4)
+    :config
+    (defun my-terraform-mode-init ()
+      ;; if you want to use outline-minor-mode
+      ;; (outline-minor-mode 1)
+      )
+    (add-hook 'terraform-mode-hook 'my-terraform-mode-init))
+
+  ;; (use-package lsp-mode
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq lsp-disabled-clients '(tfls))
+  ;;   (setq lsp-terraform-ls-prefill-required-fields t)
+  ;;   (setq lsp-keymap-prefix "C-c l")
+  ;;   ;; (setq lsp-terraform-ls-enable-show-reference t)
+  ;;   ;; (setq lsp-terraform-ls-validate-on-save t)
+  ;;   ;; (setq lsp-semantic-tokens-enable t)
+  ;;   ;; (setq lsp-semantic-tokens-honor-refresh-requests t)
+  ;;   ;; (setq lsp-keep-workspace-alive nil)
+  ;;   (setq lsp-signature-doc-lines 5)
+  ;;   (setq lsp-idle-delay 0.5)
+  ;;   (setq lsp-prefer-capf t)
+  ;;   (setq lsp-client-packages nil)
+  ;;   :init
+  ;;   :hook ((terraform-mode . lsp-deferred)))
+
+
+  ;; ;; (setq lsp-terraform-ls-enable-show-reference t)
+  ;; ;; (setq lsp-enable-links t)
+
+  ;; (use-package terraform-mode
+  ;;   :ensure t
+  ;;   :custom (terraform-indent-level 4)
+  ;;   :config
+  ;;   (defun my-terraform-mode-init ()
+  ;;     ;; if you want to use outline-minor-mode
+  ;;     ;; (outline-minor-mode 1)
+  ;;     )
+  ;;   (add-hook 'terraform-mode-hook 'my-terraform-mode-init))
+#+END_SRC
+
+* LSP Mode Ivy
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-ivy
+  :requires (lsp-mode ivy)
+  :commands (lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol))
+#+END_SRC
+
+*  German Holidays
+#+BEGIN_SRC emacs-lisp
+(use-package german-holidays
+:ensure t)
+#+END_SRC
+
+* Org-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :ensure t
+    :pin org
+    :custom (org-modules '(org-habit)))
+
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+  (custom-set-variables
+   '(org-directory "~/Documents/Personal/orgfiles/")
+   '(org-default-notes-file (concat org-directory "/notes.org")))
+
+  ;;  (global-set-key (kbd "C-c l") #'org-store-link) this we replaced to use lsp-mode C-c l
+  (global-set-key (kbd "C-c a") #'org-agenda)
+  (global-set-key (kbd "C-c c") #'org-capture)
+
+  (setq org-agenda-start-on-weekday nil)
+
+  (setq org-agenda-files (list "~/Documents/Personal/orgfiles/todo.org"
+                               "~/Documents/Personal/orgfiles/appointments.org" "~/Documents/Personal/orgfiles/diary.org"))
+#+END_SRC
+* Org additional setup
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("a" "Appointment" entry (file  "~/Documents/Personal/orgfiles/appointments.org" )
+           "* %?\n\n%^T\n\n:PROPERTIES:\n\n:END:\n\n")
+          ("t" "To Do Item" entry (file+headline "~/Documents/Personal/orgfiles/todo.org" "To Do and Notes")
+           "* TODO %?\n%u" :prepend t)
+          ("n" "Note" entry (file+headline "~/Documents/Personal/orgfiles/notes.org" "Notes")
+           "* %u %? " :prepend t)
+          ))
+
+  (setq org-agenda-custom-commands
+        '(("v" "My Agenda View"
+           ((tags "personal:now"
+                  ((org-agenda-overriding-header "now:personal")))
+            (tags "jobsearch"
+                  ((org-agenda-overriding-header "Job Search")))
+            (tags "skillup"
+                  ((org-agenda-overriding-header "Skillup")))
+            (tags "appoint"
+                  ((org-agenda-overriding-header "Appointments")))
+            (agenda ""
+                    ((org-agenda-span 1)
+                     (org-agenda-overriding-header "Today Agenda")
+                     (org-deadline-warning-days 3)))
+            (agenda ""
+                    ((org-agenda-start-day "+1d")
+                     (org-agenda-overriding-header "Next 10 days")
+                     (org-agenda-span 10)))
+            (agenda "" ((org-agenda-overriding-header "Overdue")
+                        (org-agenda-time-grid nil)
+                        (org-agenda-start-on-weekday nil)
+                        (org-agenda-show-all-dates nil)
+                        (org-agenda-format-date "")  ;; Skip the date
+                        (org-agenda-span 1)
+                        (org-scheduled-past-days 999)
+                        (org-deadline-past-days 999)
+                        (org-deadline-warning-days 0)))
+            (tags "later"
+                  ((org-agenda-overriding-header "later")))
+            (tags "future"
+                  ((org-agenda-overriding-header "future")))
+            (alltodo "")))))
+
+  ;; ;  diary related setup
+  (setq org-agenda-include-diary t)
+  (setq calendar-holidays holiday-german-BW-holidays)
+  (setq diary-file "~/Documents/Personal/orgfiles/diary.org")
+  (setq appt-activate t)
+  (setq diary-show-holidays-flag t)
+
+#+END_SRC
+* Programming
+#+BEGIN_SRC emacs-lisp
+  (use-package ggtags
+    :ensure t
+    :disabled
+    :config
+    (add-hook 'c-mode-common-hook
+              (lambda ()
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                  (ggtags-mode-1)))))
+#+END_SRC
+
+* Dumb jump
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :bind (("M-g o" . dumb-jump-go-other-window)
+           ("M-g j" . dumb-jump-go)
+           ("M-g x" . dumb-jump-go-prefer-external)
+           ("M-g z" . dumb-jump-go-prefer-external-other-window))
+    :config
+    :disabled
+    :init
+    (dumb-jump-mode)
+    :ensure)
+#+END_SRC
+
+* IBUFFER
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("dired" (mode . dired-mode))
+                 ("org" (name . "^.*org$"))
+                 ("magit" (mode . magit-mode))
+                 ("IRC" (or (mode . circe-channel-mode) (mode . circe-server-mode)))
+                 ("web" (or (mode . web-mode) (mode . js2-mode)))
+                 ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+                 ("mu4e"  (or (mode . mu4e-compose-mode) (name . "\*mu4e\*")))
+                 ("programming" (or (mode . python-mode) (mode . python-ts-mode) (mode . c++-mode)))
+                 ("emacs" (or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$")))
+                 ))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")))
+  ;; Don't show filter groups if there are no buffers in that group
+  (setq ibuffer-show-empty-filter-groups nil)
+
+  ;; Don't ask for confirmation to delete marked buffers
+  (setq ibuffer-expert t)
+#+END_SRC
+
+* Latex
+#+BEGIN_SRC emacs-lisp
+  (use-package tex
+    :defer t
+    :ensure auctex
+    :config
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq-default TeX-master nil)
+    (setq LaTeX-indent-level 4)
+                                          ;(setq TeX-PDF-mode t)
+    (add-hook 'LaTeX-mode-hook 'visual-line-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
+#+END_SRC
+
+* company-latex
+#+BEGIN_SRC emacs-lisp
+  (use-package company-math
+    :ensure t
+    :config
+    :init
+    (add-hook 'LaTeX-mode-hook (lambda ()
+                                 (add-to-list 'company-backends 'company-math-symbols-latex)
+                                 (add-to-list 'company-backends 'company-latex-commands))))
+
+  ;; (use-package company-auctex
+  ;; :ensure t
+  ;; :config
+  ;; (company-auctex-init))
+#+END_SRC
+
+* bindings
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load 'tex
+    '(progn
+       (defun save-compile-latex ()
+         "Save and compile latex document"
+         (interactive)
+         (save-buffer)
+         (TeX-command-sequence t t))
+       (defun complete-if-no-space ()
+         (interactive)
+         (let ((cb (string (char-before))))
+           (if (or (equal cb " ") (equal (point) (line-beginning-position)))
+               (tab-to-tab-stop)
+             (TeX-complete-symbol))))
+       (add-hook 'LaTeX-mode-hook (lambda ()
+                                    (define-key LaTeX-mode-map (kbd "<f5>") 'save-compile-latex)
+                                    (define-key LaTeX-mode-map (kbd "<f7>") 'preview-clearout-buffer)
+                                    (define-key LaTeX-mode-map (kbd "TAB") 'complete-if-no-space)
+                                    (define-key LaTeX-mode-map (kbd "<tab>") 'complete-if-no-space)))))
+#+END_SRC
+
+* gnuplot
+#+BEGIN_SRC emacs-lisp
+  (use-package gnuplot-mode
+    :ensure t
+    :init)
+  (add-hook 'gnuplot-mode-hook
+            (lambda ()
+              (flyspell-prog-mode)
+              (add-hook 'before-save-hook
+                        'whitespace-cleanup nil t)))
+  (setq auto-mode-alist
+        (append '(("\\.\\(gp\\|gnuplot\\)$" . gnuplot-mode)) auto-mode-alist))
+
+  (autoload 'gnuplot-mode "gnuplot" "gnuplot major mode" t)
+  (autoload 'gnuplot-make-buffer "gnuplot" "open a buffer in gnuplot-mode" t)
+  (setq auto-mode-alist (append '(("\\.gp\\'" . gnuplot-mode))
+                                auto-mode-alist))
+#+END_SRC
+
+* cp2k
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.emacs.d/not_elpa/")
+  (require 'cp2k-mode nil 'noerror)
+  (add-to-list 'auto-mode-alist '("\\.inp\\'" . cp2k-mode))
+#+END_SRC
+
+* VMD
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.vmd\\'" . tcl-mode))
+#+END_SRC
+
+* persistent-scratch
+#+BEGIN_SRC emacs-lisp
+  ;; persistent-scratch
+  (use-package persistent-scratch
+    :ensure t
+    :config
+    (persistent-scratch-setup-default))
+#+END_SRC
+
+* Bookmarks
+#+BEGIN_SRC emacs-lisp
+  (use-package bm
+    :ensure t
+    :disabled
+    :init
+    :bind (("<C-f2>" . bm-toggle)
+           ("<f2>" . bm-next)
+           ("<S-f2>" . bm-previous)))
+#+END_SRC
+
+* lammps
+#+BEGIN_SRC emacs-lisp
+  (use-package lammps-mode
+    :ensure t
+    :init
+    (autoload 'lammps-mode "lammps-mode.el" "LAMMPS mode." t)
+    (setq auto-mode-alist (append auto-mode-alist
+                                  '(("\\.lmp\\'" . lammps-mode))
+                                  '(("\\.lmpin\\'" . lammps-mode))
+                                  )))
+#+END_SRC
+
+* treemacs
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs
+  :ensure t
+  :defer t
+  :custom
+  (treemacs-no-png-images t)
+  (treemacs-width 24)
+  :bind ("C-c t" . treemacs))
+#+END_SRC
+
+* pdf tools
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+  :ensure t
+  :defer t
+  :magic ("%PDF" . pdf-view-mode)
+  :hook (TeX-after-compilation-finished-hook . TeX-revert-document-buffer)
+  :defines pdf-annot-activate-created-annotations
+  :custom
+  (pdf-view-display-size 'fit-page)
+  ;; more fine-grained zooming
+  (pdf-view-resize-factor 1.05)
+  ;; create annotation on highlight
+  (pdf-annot-activate-created-annotations t)
+  :config
+  (pdf-tools-install :no-query)
+  :bind (:map pdf-view-mode-map
+	      ("C-s" . isearch-forward)
+	      ("C-r" . isearch-backward)))
+#+END_SRC
+* Magit and Git-Modes
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :defer t
+  :pin melpa
+  :bind ("C-x g" . magit-status))
+(setq magit-define-global-key-bindings 'recommended)
+
+(use-package git-modes
+  :ensure t
+  :defer t)
+
+
+#+END_SRC
+
+* Docker mode
+#+BEGIN_SRC emacs-lisp
+(use-package docker
+  :ensure t
+  :defer t)
+
+(use-package dockerfile-mode
+  :ensure t
+  :defer t)
+
+#+END_SRC
+
+* Rainbow Delimiters
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :hook (prog-mode-hook . rainbow-delimiters-mode))
+#+END_SRC
+
+* CSV-Mode
+#+BEGIN_SRC emacs-lisp
+(use-package csv-mode
+  :ensure t
+  :defer t)
+#+END_SRC
+
+* HTMLIZE
+#+BEGIN_SRC emacs-lisp
+(use-package htmlize
+:ensure t
+:defer t)
+#+END_SRC
