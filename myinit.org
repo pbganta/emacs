@@ -35,6 +35,8 @@
   (setq column-number-mode t)
   (delete-selection-mode 1)  ;; make typing delete/overwrites selected text
   (desktop-save-mode 1)
+  (when (fboundp 'winner-mode)
+    (winner-mode 1))
   (show-paren-mode 1)
   (setq show-paren-style 'parenthesis)
   (setq tab-always-indent 'complete)
@@ -331,7 +333,7 @@
   (setq org-agenda-custom-commands
         '(("v" "My Agenda View"
            ((tags "personal:now"
-                  ((org-agenda-overriding-header "now:personal")))
+                  ((org-agenda-overriding-header "personal:now")))
             (tags "jobsearch"
                   ((org-agenda-overriding-header "Job Search")))
             (tags "skillup"
@@ -354,7 +356,7 @@
                         (org-agenda-span 1)
                         (org-scheduled-past-days 999)
                         (org-deadline-past-days 999)
-                        (org-deadline-warning-days 0)))
+                        (org-deadline-warning-days 2)))
             (tags "later"
                   ((org-agenda-overriding-header "later")))
             (tags "future"

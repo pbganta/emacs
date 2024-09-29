@@ -62,3 +62,4 @@ marked files with given extension * ., * /, * @
 * Documentation
 
 C-h m - to see shortcuts for the major mode you are in V V V IMPORTANT 
+C-c l h-h - lsp mode to see variables
