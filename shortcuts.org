@@ -2,11 +2,15 @@
 
 C-x C-x - swaps point and mark 
 
-C-u C-SPC - mark ring
+C-SPC C-SPC to mark a point
+
+C-u C-SPC - to move in a local buffer mark ring 
+
+C-x C-SPC - to move in a global mark ring across buffers 
 
 M-a, M-e - sentence end and start
 
-C-Downarrow, C-uparrow - paragraph end and start 
+M-}, M-{ - paragraph end and start 
 
 C-M-v - scrolls other window
 
@@ -14,9 +18,26 @@ C-M-f, C-M-b - moves as per the brackerts search-expression sexp.,. just try it.
 
 C-M-a, C-M-e - function definition starting and ending 
 
+M-r - to move to top bottom and center of the emacs window 
+
+M-g i - list definitions and u can pick one to go
+
+** Bookmarks  
+
+C-x r m - bookmark a spot and give it a name
+
+C-x r b - jump to a named bookmark
+
+C-x r l - list book marks
+
 * Selection
 
 C-M-u, C-M-SPC - select content between brackets
+
+M-h    - select paragraph 
+
+C-x SPC - enter rectangle selection mode 
+
 
 * Hide unhide
 
@@ -36,7 +57,6 @@ C-M-o split current line at point
 
 C-x Tab - to move region for indentation
 
-C-SPC C-SPC - sets point without activating selection
 
 C-u 100 command -  to run a command for 100 times 
 
@@ -44,22 +64,60 @@ https://www.gnu.org/software/emacs/manual/html_node/emacs/Indentation-Commands.h
 
 * Rectangles
 
-C-x r t string RET - insert string 
+C-x r t string RET - insert string
+ 
 C-x r c - clear reactangle (inplace clear)
+
 C-r r o - insert space and moves rectangle content right side
+
 C-x SPC - rectangle selection mode
 
 * Dired commands 
+
 ^ - move directory up; v visit directory
+
 m - mark, u - unmark, D -delete files, C- copy files
+
 v - read only files, o - open file
+
 M-} M-{  - move between marked files
 
 ** other stuff
+
 = - compare file at point to marked one
+
 marked files with given extension * ., * /, * @
 
 * Documentation
 
 C-h m - to see shortcuts for the major mode you are in V V V IMPORTANT 
+
 C-c l h-h - lsp mode to see variables
+
+* MISC
+
+C-x z repeat the previous command or C-x z z z z to repeat multiple times 
+
+** kill
+
+C-S-Backspace kills entire line                         
+
+C-M-K kill matching expression text 
+
+M-z : kill until the next character including it 
+
+** Registers
+
+C-x r SPC r - creates only one point in a buffer to be save
+
+C-x r j r - jumps to register points 
+
+** Narrowing
+
+C-x n n - narrow to selected region
+
+C-x n w - widen selected region
+
+C-x n p - to current page
+
+C-x n d - to current definition

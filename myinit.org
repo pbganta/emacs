@@ -20,6 +20,7 @@
   (setq confirm-kill-emacs 'y-or-n-p)
   (setq ring-bell-function 'ignore)
   (setq visible-bell 1)
+  (setq visual-line-mode t)
   (global-set-key (kbd "<f5>") 'revert-buffer)
   (defalias 'list-buffers 'ibuffer)
   (global-set-key (kbd "C-<right>") 'forward-sentence)
@@ -39,12 +40,24 @@
     (winner-mode 1))
   (show-paren-mode 1)
   (setq show-paren-style 'parenthesis)
+  ;; customize tab indent
   (setq tab-always-indent 'complete)
+  (setq-default indent-tabs-mode nil) ;; set default indent as not tab
+  (setq-default tab-width 2)
+  (setq indent-line-function 'insert-tab)
   (add-to-list 'completion-styles 'initials t)
+  ;; set unset keys
   (global-unset-key (kbd "C-x C-z"))
   (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-m"))
   (global-set-key (kbd "C-<") 'previous-buffer)
   (global-set-key (kbd "C->") 'next-buffer)
+  (setq gc-cons-percentage 0.5
+      gc-cons-threshold (* 128 1024 1024))
+  (setq-default set-mark-command-repeat-pop t)
+  (setq display-line-numbers-type 'relative)
+  (global-display-line-numbers-mode)
+  (setq show-trailing-whitespace 1)
 #+END_SRC
 
 * create backup files
@@ -189,6 +202,15 @@
                 ("C-c c r" . eglot-rename)))
 #+END_SRC
 
+* Eldoc
+#+BEGIN_SRC emacs-lisp
+(use-package eldoc
+  :ensure nil
+  :hook (prog-mode . eldoc-mode)
+  :config
+  (setq eldoc-message-function #'message))
+#+END_SRC
+
 * treesit-auto
 #+BEGIN_SRC emacs-lisp
   (use-package treesit-auto
@@ -283,15 +305,15 @@
 
 * LSP Mode Ivy
 #+BEGIN_SRC emacs-lisp
-(use-package lsp-ivy
-  :requires (lsp-mode ivy)
-  :commands (lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol))
+  (use-package lsp-ivy
+    :requires (lsp-mode ivy)
+    :commands (lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol))
 #+END_SRC
 
 *  German Holidays
 #+BEGIN_SRC emacs-lisp
-(use-package german-holidays
-:ensure t)
+  (use-package german-holidays
+    :ensure t)
 #+END_SRC
 
 * Org-mode
@@ -317,7 +339,8 @@
   (setq org-agenda-start-on-weekday nil)
 
   (setq org-agenda-files (list "~/Documents/Personal/orgfiles/todo.org"
-                               "~/Documents/Personal/orgfiles/appointments.org" "~/Documents/Personal/orgfiles/diary.org"))
+                               "~/Documents/Personal/orgfiles/appointments.org"
+"~/Documents/Personal/orgfiles/diary.org"))
 #+END_SRC
 * Org additional setup
 #+BEGIN_SRC emacs-lisp
@@ -332,7 +355,7 @@
 
   (setq org-agenda-custom-commands
         '(("v" "My Agenda View"
-           ((tags "personal:now"
+           ((tags "personal+now"
                   ((org-agenda-overriding-header "personal:now")))
             (tags "jobsearch"
                   ((org-agenda-overriding-header "Job Search")))
@@ -591,34 +614,112 @@
 
 * Docker mode
 #+BEGIN_SRC emacs-lisp
-(use-package docker
-  :ensure t
-  :defer t)
+  (use-package docker
+    :ensure t
+    :defer t)
 
-(use-package dockerfile-mode
-  :ensure t
-  :defer t)
-
-#+END_SRC
+  (use-package dockerfile-mode
+    :ensure t
+    :defer t)
+  (add-to-list 'auto-mode-alist '("\\.docker\\'" . dockerfile-mode))
+    #+END_SRC
 
 * Rainbow Delimiters
 #+BEGIN_SRC emacs-lisp
-(use-package rainbow-delimiters
-  :ensure t
-  :defer t
-  :hook (prog-mode-hook . rainbow-delimiters-mode))
+  (use-package rainbow-delimiters
+    :ensure t
+    :defer t
+    :hook (prog-mode-hook . rainbow-delimiters-mode))
 #+END_SRC
 
 * CSV-Mode
 #+BEGIN_SRC emacs-lisp
-(use-package csv-mode
-  :ensure t
-  :defer t)
+  (use-package csv-mode
+    :ensure t
+    :defer t)
 #+END_SRC
 
 * HTMLIZE
 #+BEGIN_SRC emacs-lisp
-(use-package htmlize
-:ensure t
-:defer t)
+  (use-package htmlize
+    :ensure t
+    :defer t)
+#+END_SRC
+
+* Kubernetes
+#+BEGIN_SRC emacs-lisp
+  (use-package kubernetes
+    :ensure t
+    :commands (kubernetes-overview)
+    :config
+    (setq kubernetes-poll-frequency 3600
+          kubernetes-redraw-frequency 3600))
+#+END_SRC
+
+* Projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t)
+#+END_SRC
+
+* Dashboard
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :config
+    (dashboard-setup-startup-hook))
+#+END_SRC
+
+* Kubed - to control via kubectl
+#+BEGIN_SRC emacs-lisp
+  (use-package kubed
+    :ensure t
+      :defer t)
+#+END_SRC
+
+* K8S documentation
+#+BEGIN_SRC emacs-lisp
+  (use-package kubedoc
+    :ensure t
+    :defer t)
+#+END_SRC
+
+* Py-Env
+#+BEGIN_SRC emacs-lisp
+  (use-package pyvenv
+    :ensure t
+    :defer t)
+
+  (setq pyvenv-post-activate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+  (setq pyvenv-post-deactivate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter "python3"))))
+#+END_SRC
+
+* K8S documentation
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :defer t
+    :bind ("C-=" . er/expand-region))
+#+END_SRC
+
+* Random customization
+#+BEGIN_SRC emacs-lisp
+; C-x C-x will not select text 
+(defun exchange-point-and-mark-no-activate ()
+  "Identical to \\[exchange-point-and-mark] but will not activate the region."
+  (interactive)
+  (exchange-point-and-mark)
+  (deactivate-mark nil))
+(define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
+
+; C-u C-SPC not select text
+(defun jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+  This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
 #+END_SRC
