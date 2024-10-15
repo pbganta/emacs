@@ -1,3 +1,10 @@
+* Documentation
+
+Eldoc is used for documentation reading
+
+C-h . opens a eldoc window to read documentations
+
+
 * Movement  
 
 C-x C-x - swaps point and mark 
@@ -18,6 +25,10 @@ C-M-f, C-M-b - moves as per the brackerts search-expression sexp.,. just try it.
 
 C-M-a, C-M-e - function definition starting and ending 
 
+C-M-n, C-M-p - moves around a parenthesis (does not enter them just go around them)
+
+C-M-u, C-M-d - in a nested parenthesis it goes in and out of the nests 
+
 M-r - to move to top bottom and center of the emacs window 
 
 M-g i - list definitions and u can pick one to go
@@ -32,7 +43,7 @@ C-x r l - list book marks
 
 * Selection
 
-C-M-u, C-M-SPC - select content between brackets
+C-M-u C-M-SPC - select content between brackets
 
 M-h    - select paragraph 
 
@@ -57,10 +68,11 @@ C-M-o split current line at point
 
 C-x Tab - to move region for indentation
 
+C-M-q - indent content in parenthesis
+
+C-u Tab - to move a parenthesis group rigidly 
 
 C-u 100 command -  to run a command for 100 times 
-
-https://www.gnu.org/software/emacs/manual/html_node/emacs/Indentation-Commands.html
 
 * Rectangles
 
