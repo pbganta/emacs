@@ -26,6 +26,9 @@
   (global-set-key (kbd "C-<right>") 'forward-sentence)
   (setq mouse-drag-copy-region t)   ;; copies text selected by mouse
   (setq package-check-signature nil)
+  (setq display-line-numbers-type 'relative)
+  (global-display-line-numbers-mode)
+  (setq show-trailing-whitespace 1)
   (setq electric-indent-mode t)
   (setq electric-pair-mode t)
   (setq-default cursor-type 'bar)
@@ -46,17 +49,17 @@
   (setq-default tab-width 2)
   (setq indent-line-function 'insert-tab)
   (add-to-list 'completion-styles 'initials t)
-  ;; set unset keys
+  ;; set and unset keys
   (global-unset-key (kbd "C-z"))
   (global-unset-key (kbd "C-m"))
+  (global-unset-key (kbd "C-e"))
   (global-set-key (kbd "C-<") 'previous-buffer)
   (global-set-key (kbd "C->") 'next-buffer)
+   ;; memory fix
   (setq gc-cons-percentage 0.5
       gc-cons-threshold (* 128 1024 1024))
+   ;; for C-u C-SPC command. Just hit space after
   (setq-default set-mark-command-repeat-pop t)
-  (setq display-line-numbers-type 'relative)
-  (global-display-line-numbers-mode)
-  (setq show-trailing-whitespace 1)
 #+END_SRC
 
 * create backup files
@@ -65,7 +68,7 @@
   (setq backup-by-copying t)
   (setq delete-old-versions t
         kept-new-versions 6
-        kept-old-versions 2
+        kept-old-versions 6
         version-control t)
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/myundofiles/")))
 #+END_SRC
@@ -150,6 +153,7 @@
     (setq company-minimum-prefix-length 3)
     (company-terraform-init))
 #+END_SRC
+
 * C and C++ related 
 #+BEGIN_SRC emacs-lisp
 
@@ -169,7 +173,6 @@
     :ensure t
     :config
     (add-hook 'irony-mode-hook #'irony-eldoc))
-
 #+END_SRC
 
 * avy
@@ -709,7 +712,75 @@
     :bind ("C-=" . er/expand-region))
 #+END_SRC
 
-* Random customization
+* EWW setup
+#+BEGIN_SRC emacs-lisp
+(use-package eww
+  :ensure nil
+  :config
+  (setq eww-restore-desktop t)
+  (setq eww-desktop-remove-duplicates t)
+  (setq eww-header-line-format nil)
+  (setq eww-search-prefix "https://duckduckgo.com/html/?q=")
+  (setq eww-download-directory (expand-file-name "~/Documents/eww-downloads"))
+  (setq eww-suggest-uris
+        '(eww-links-at-point
+          thing-at-point-url-at-point))
+  (setq eww-bookmarks-directory (locate-user-emacs-file "eww-bookmarks/"))
+  (setq eww-history-limit 5)
+  (setq eww-browse-url-new-window-is-tab nil)
+  (setq eww-retrieve-command nil)
+  (setq browse-url-browser-function 'eww-browse-url))
+#+END_SRC
+
+* Elfeed 
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+    :ensure t
+    :custom
+    (elfeed-db-directory
+     (expand-file-name "elfeed" user-emacs-directory))
+    (elfeed-show-entry-switch 'display-buffer)
+    :bind
+    ("C-x w" . elfeed))
+
+  (setq elfeed-feeds 
+        '(
+          ;; work 
+          ("https://devops.com/feed/" work devops)
+          ("https://atlassian.com/blog/devops/feed/" work devops)
+          ("https://docker.com/feed/" work docker)
+          ("https://www.hashicorp.com/blog/products/terraform/feed.xml" work terraform)
+          ("https://aws.amazon.com/blogs/aws-cost-management/feed/" work aws)
+          ("https://aws.amazon.com/blogs/devops/feed/" work aws)
+          ("https://aws.amazon.com/blogs/developer/feed/" work aws)
+          ("https://bair.berkeley.edu/blog/feed.xml" work ai)
+          ("https://towardsdatascience.com/feed/" work ai)
+          ("https://aws.amazon.com/blogs/machine-learning/feed/" work ai)
+          ;; emacs 
+          ("http://pragmaticemacs.com/feed/" fun emacs)
+          ("https://sachachua.com/blog/category/emacs/feed/index.xml" fun emacs)
+          ;; english news           
+          ("https://feeds.bbci.co.uk/news/rss.xml"  news)
+          ("https://rss.dw.com/rdf/rss-en-all"  news)
+          ;; telugu news 
+          ("https://ntvtelugu.com/feed/" telugu news)
+          ("https://www.greatandhra.com/ga_quickcms/xml/news_most_popular_latest.xml" telugu news)
+          ;; german news 
+          ("https://www.tagesschau.de/xml/rss2" german news)
+          ("https://www.gala.de/feed/standard-rss/" german news)
+          ("https://www.zdf.de/rss/zdf/nachrichten" german news)
+          ("https://www.n-tv.de/leute/rss" german news)
+          ("http://www.bild.de/rssfeeds/rss3-20745882,feed=alles.bild.html" german news)
+          ;; german course 
+          ("http://rss.dw-world.de/rdf/DKfeed_lgn_de" german study)
+          ("http://rss.dw-world.de/rdf/DKfeed_topthemamitvokabeln_de" german study)
+          ("http://rss.dw-world.de/rdf/DKfeed_wortderwoche_de" german study)
+          ("http://rss.dw-world.de/rdf/DKfeed_alltagsdeutsch_de" german study)
+          ("http://rss.dw-world.de/rdf/DKfeed_alltagsdeutsch_de" german study)
+          ))
+#+END_SRC 
+
+* Misc customization
 #+BEGIN_SRC emacs-lisp
 ; C-x C-x will not select text 
 (defun exchange-point-and-mark-no-activate ()

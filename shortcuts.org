@@ -2,8 +2,7 @@
 
 Eldoc is used for documentation reading
 
-C-h . opens a eldoc window to read documentations
-
+C-h . opens a eldoc window to read documentation
 
 * Movement  
 
@@ -21,9 +20,9 @@ M-}, M-{ - paragraph end and start
 
 C-M-v - scrolls other window
 
-C-M-f, C-M-b - moves as per the brackerts search-expression sexp.,. just try it.,. imp
-
 C-M-a, C-M-e - function definition starting and ending 
+
+C-M-f, C-M-b - moves as per the brackerts search-expression sexp.,. just try it.,. imp
 
 C-M-n, C-M-p - moves around a parenthesis (does not enter them just go around them)
 
@@ -32,6 +31,14 @@ C-M-u, C-M-d - in a nested parenthesis it goes in and out of the nests
 M-r - to move to top bottom and center of the emacs window 
 
 M-g i - list definitions and u can pick one to go
+
+M-. - if you are on def/symbol/name/section/etc and use this then pointer moves to def 
+
+M-, - goes back to where you used M-.
+
+C-M-. pattern RET - same as M-.
+
+C-M-, goes back to where you used C-M-,
 
 ** Bookmarks  
 
@@ -56,9 +63,11 @@ C-x n n - hide everything except selected region
 
 C-x n w - show again everything after hiding
 
+
 * Shell
 
 M-! give shell command to execute single commands; cp ./file ./file_2 will copy file
+
 
 * Indentation 
 
@@ -73,6 +82,7 @@ C-M-q - indent content in parenthesis
 C-u Tab - to move a parenthesis group rigidly 
 
 C-u 100 command -  to run a command for 100 times 
+
 
 * Rectangles
 
@@ -133,3 +143,31 @@ C-x n w - widen selected region
 C-x n p - to current page
 
 C-x n d - to current definition
+
+* Autocomplete
+
+ C-M-i - complete at a point 
+
+ C-M-. display list of regexp 
+
+* Projects
+
+C-x p f  Visit a file that belongs to the current project
+
+C-x p g  regexp in all project files
+
+C-x p r  Perform query-replace for a regexp 
+
+C-x p d  Run Dired
+
+C-x p s  Start an inferior shell
+
+C-x p ! Run shell command in the current project’s root directory
+
+C-x p & Run shell command asynchronously in the current project’s root directory
+
+C-x p p - SWITCH PROJECT 
+
+M-x project-forget-project - remove project 
+
+
