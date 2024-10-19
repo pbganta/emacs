@@ -50,24 +50,23 @@ C-x r l - list book marks
 
 * Selection
 
-C-M-u C-M-SPC - select content between brackets
+C-M-SPC - if u are before a bracket/sexp, u can select text inside it
+
+C-M-u C-M-SPC - if u are inside brackets; C-M-u makes you go up/above the brackets and C-M-SPC selects the text
 
 M-h    - select paragraph 
 
 C-x SPC - enter rectangle selection mode 
 
-
-* Hide unhide
+* Narrowing/Hide unhide
 
 C-x n n - hide everything except selected region
 
 C-x n w - show again everything after hiding
 
-
 * Shell
 
 M-! give shell command to execute single commands; cp ./file ./file_2 will copy file
-
 
 * Indentation 
 
@@ -126,7 +125,14 @@ C-S-Backspace kills entire line
 
 C-M-K kill matching expression text 
 
-M-z : kill until the next character including it 
+{
+asd asd asda sda sdas das d asdfasdfsdfasdfasdf
+  {sdasd asdas dasda dasdas asda
+    {dasd asdasda}
+  }
+}
+    
+M-z : kill until the next character including it (useful to play with brackets)
 
 ** Registers
 
@@ -170,4 +176,17 @@ C-x p p - SWITCH PROJECT
 
 M-x project-forget-project - remove project 
 
+* Alignment
+
+ M-x align - aligns stuff/ but only once
+
+ M-x align-regexp - aligns based on regexp/ but executes only once
+
+ C-u M-x align-regexp - aligns based on regexp/ but executes multiple time until all lines
+
+* YasSnippet
+
+C-c C-c loads snippet buffer and closes window
+
+C-c C-t loads major mode and shows how snippet would be
 
