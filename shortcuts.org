@@ -40,6 +40,8 @@ C-M-. pattern RET - same as M-.
 
 C-M-, goes back to where you used C-M-,
 
+C-t, M-t, C-S-t, C-M-t - transpose letter, word, line, sexp
+
 ** Bookmarks  
 
 C-x r m - bookmark a spot and give it a name
