@@ -43,10 +43,10 @@
   (global-display-line-numbers-mode)
   (setq show-trailing-whitespace 1)
   (setq electric-indent-mode t)
-  (setq electric-pair-mode t)
+  ;; (setq electric-pair-mode t) # pairing video 
   (setq-default cursor-type 'box)
   (set-cursor-color "#ff0000")
-  (setq frame-title-format "%b <%f>")
+  ;; (setq frame-title-format "%b <%f>")
   (setq auto-save-default nil)
   (setq create-lockfiles nil)
   (setq column-number-mode t)
@@ -64,14 +64,19 @@
   (add-to-list 'completion-styles 'initials t)
   ;; for C-u C-SPC command. Just hit space after
   (setq-default set-mark-command-repeat-pop t)
-  #+END_SRC
+  (setq exec-path (append exec-path '("/home/gpb/.emacs.d/.cache/lsp/npm/yaml-language-server/lib/node_modules/yaml-language-server/bin" "/home/gpb/.nvm/versions/node/v22.10.0/bin/" "/home/gpb/.local/bin" "/home/gpb/.local/bin" "/home/gpb/.local/bin" "/usr/sbin" "/usr/bin" "/sbin" "/bin" "/usr/games" "/usr/local/games" "/snap/bin" "/snap/bin")))
+
+#+END_SRC
 
 * set and unset keys
 #+BEGIN_SRC emacs-lisp
   (global-unset-key (kbd "C-z"))
-  (global-set-key (kbd "C-<") 'previous-buffer)
-  (global-set-key (kbd "C->") 'next-buffer)
-#+END_SRC 
+;;  (global-set-key (kbd "C-<") 'previous-buffer)
+;;  (global-set-key (kbd "C->") 'next-buffer)
+  (global-set-key (kbd "C-c d") 'duplicate-line)
+  ;; transpose stuff
+  (global-set-key (kbd "C-S-t") 'transpose-lines)
+  #+END_SRC 
 
 * create backup files
 #+BEGIN_SRC emacs-lisp
@@ -153,14 +158,14 @@
   (use-package company
     :ensure t
     :config
-    (setq company-idle-delay 0.1)
+    (setq company-idle-delay 0.5)
     (setq company-minimum-prefix-length 3)
     (global-company-mode t))
 
   (use-package company-terraform
     :ensure t
     :config
-    (setq company-idle-delay 0.1)
+    (setq company-idle-delay 0.5)
     (setq company-minimum-prefix-length 3)
     (company-terraform-init))
 #+END_SRC
@@ -209,21 +214,28 @@
     (setq flycheck-shellcheck-follow-sources nil))
 #+END_SRC
 
-* Eglot
+* Eglot - emacs client for language server protocol; similar to lsp-mode
 #+BEGIN_SRC emacs-lisp
   (use-package eglot
+    :ensure t
+    :hook (((c-mode c++-mode python-ts-mode) . eglot-ensure))
     :bind (:map eglot-mode-map
                 ("C-c e d" . eldoc)
                 ("C-c e a" . eglot-code-actions)
                 ("C-c e f" . flymake-show-buffer-diagnostics)
                 ("C-c e r" . eglot-rename)))
+
+  ;; (with-eval-after-load 'eglot
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '(yaml-mode . ("/home/gpb/.emacs.d/.cache/lsp/npm/yaml-language-server/lib/node_modules/yaml-language-server/bin/yaml-language-server" "--stdio"))
+  ;;              '(yaml-ts-mode . ("/home/gpb/.emacs.d/.cache/lsp/npm/yaml-language-server/lib/node_modules/yaml-language-server/bin/yaml-language-server" "--stdio"))))
 #+END_SRC
 
 * Eldoc
 #+BEGIN_SRC emacs-lisp
   (use-package eldoc
-    :ensure nil
-    :hook (prog-mode . eldoc-mode)
+    :ensure t
+    :hook (((prog-mode) . eldoc-mode))
     :config
     (setq eldoc-message-function #'message))
 #+END_SRC
@@ -286,45 +298,67 @@
     (global-undo-tree-mode))
 #+END_SRC
 
-* terraform-mode
+* LSP-mode - emacs client for language server protocol; similar to eglot
 #+BEGIN_SRC emacs-lisp
   (setq lsp-keymap-prefix "C-c l")
+
   (use-package lsp-mode
     :ensure t
     :config
-    (setq lsp-disabled-clients '(tfls))
-    (setq lsp-terraform-ls-prefill-required-fields t)
-    (setq lsp-terraform-ls-validate-on-save t)
-    (setq lsp-terraform-ls-enable-show-reference t)
-    (setq lsp-terraform-ls-validate-on-save t)
+    (setq lsp-keymap-prefix "C-c l")  
     (setq lsp-semantic-tokens-enable t)
     (setq lsp-semantic-tokens-honor-refresh-requests t)
     (setq lsp-signature-doc-lines 5)
     (setq lsp-idle-delay 0.5)
     (setq lsp-prefer-capf t)
     (setq lsp-keep-workspace-alive nil)
-    :hook ((terraform-mode . lsp-deferred)))
-  ;; (setq lsp-terraform-ls-enable-show-reference t)
-  ;; (setq lsp-enable-links t)
+    :hook ((terraform-mode . lsp-deferred)
+           (yaml-mode . lsp-deferred)
+           (yaml-ts-mode . lsp-deferred)
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
 
-  (with-eval-after-load 'lsp-mode
-    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+  (use-package lsp-ivy
+    :requires (lsp-mode ivy)
+    :commands (lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol))
 
+  (use-package lsp-ui 
+    :ensure t
+    :commands lsp-ui-mode)
+  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-position 'at-point)
+  (setq lsp-ui-doc-show-with-cursor nil)
+  (setq lsp-ui-doc-show-with-mouse t)
+
+  (use-package lsp-treemacs
+    :ensure t
+    :commands lsp-treemacs-errors-list)
+
+  (use-package dap-mode
+    :ensure t)
+
+ (setq lsp-enable-links t)
+ (setq lsp-terraform-ls-enable-show-reference t)
+
+  ;; (with-eval-after-load 'lsp-mode
+  ;;   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
+#+END_SRC
+
+* Terraform mode; dependent on lsp-mode; 
+#+BEGIN_SRC emacs-lisp
   (use-package terraform-mode
     :ensure t
     :custom (terraform-indent-level 4)
     :config
     (defun my-terraform-mode-init ()
-      ;; (outline-minor-mode 1)
+    (setq lsp-disabled-clients '(tfls))      ;; (outline-minor-mode 1)
+    (setq lsp-terraform-ls-prefill-required-fields t)
+    (setq lsp-terraform-ls-validate-on-save t)
+    (setq lsp-terraform-ls-enable-show-reference t)
+    (setq lsp-terraform-ls-validate-on-save t)
       )
     (add-hook 'terraform-mode-hook 'my-terraform-mode-init))
-#+END_SRC
-
-* LSP Mode Ivy
-#+BEGIN_SRC emacs-lisp
-  (use-package lsp-ivy
-    :requires (lsp-mode ivy)
-    :commands (lsp-ivy-workspace-symbol lsp-ivy-global-workspace-symbol))
 #+END_SRC
 
 *  German Holidays
@@ -600,8 +634,7 @@
     :defer t
     :custom
     (treemacs-no-png-images t)
-    (treemacs-width 24)
-    :bind ("C-c t" . treemacs))
+    (treemacs-width 24))
 #+END_SRC
 
 * pdf tools
@@ -725,7 +758,7 @@
                 (setq python-shell-interpreter "python3"))))
 #+END_SRC
 
-* K8S documentation
+* Expand region
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
     :ensure t
@@ -749,8 +782,8 @@
     (setq eww-bookmarks-directory (locate-user-emacs-file "eww-bookmarks/"))
     (setq eww-history-limit 5)
     (setq eww-browse-url-new-window-is-tab nil)
-    (setq eww-retrieve-command nil)
-    (setq browse-url-browser-function 'eww-browse-url))
+    (setq eww-retrieve-command nil))
+;;    (setq browse-url-browser-function 'eww-browse-url))
 #+END_SRC
 
 * Elfeed 
@@ -804,11 +837,19 @@
 * Yaml-Mode; 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
-    :ensure t)
-  
-  (use-package yaml-pro
-    :ensure t)
-  (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-pro-mode))
+      :ensure t
+      :defer t)
+  (setq auto-mode-alist
+        (append '(("\\.\\(yaml\\|yml\\)$" . yaml-ts-mode)) auto-mode-alist))
+
+  (use-package flycheck-yamllint
+    :ensure t
+    :defer t
+    :init
+    (progn
+      (eval-after-load 'flycheck
+        '(add-hook 'flycheck-mode-hook 'flycheck-yamllint-setup))))
+
 #+END_SRC
 
 * Smart Parenthesis
@@ -816,8 +857,15 @@
   (use-package smartparens
     :ensure t
     :config
-    (smartparens-global-mode 1)
+    (smartparens-global-mode nil)
     )
+#+END_SRC
+
+* documentation
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package devdocs
+  ;;   :ensure t)
+  ;; (global-set-key (kbd "C-h D") 'devdocs-lookup)
 #+END_SRC
 
 * Helpful - more advanced help 
@@ -831,30 +879,43 @@
          ("C-h k" . helpful-key)))
 #+END_SRC
 
+* exec path from shell
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+   :ensure t
+   :init)
+#+END_SRC
+
+
 * Combulate - An advanced movement approach
 
 * Misc customization
 #+BEGIN_SRC emacs-lisp
 
-; C-x C-x will not select text 
-(defun exchange-point-and-mark-no-activate ()
-  "Identical to \\[exchange-point-and-mark] but will not activate the region."
-  (interactive)
-  (exchange-point-and-mark)
-  (deactivate-mark nil))
-(define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
+  ; C-x C-x will not select text 
+  (defun exchange-point-and-mark-no-activate ()
+    "Identical to \\[exchange-point-and-mark] but will not activate the region."
+    (interactive)
+    (exchange-point-and-mark)
+    (deactivate-mark nil))
+  (define-key global-map [remap exchange-point-and-mark] 'exchange-point-and-mark-no-activate)
 
-; C-u C-SPC not select text
-(defun jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.
-  This is the same as using \\[set-mark-command] with the prefix argument."
-  (interactive)
-  (set-mark-command 1))
+  ; C-u C-SPC not select text
+  (defun jump-to-mark ()
+    "Jumps to the local mark, respecting the `mark-ring' order.
+    This is the same as using \\[set-mark-command] with the prefix argument."
+    (interactive)
+    (set-mark-command 1))
 
- ;; memory fix
-(setq gc-cons-percentage 0.5
-   gc-cons-threshold (* 128 1024 1024))
+   ;; memory fix
+  (setq gc-cons-percentage 0.5
+     gc-cons-threshold (* 128 1024 1024))
 
+  ;; transparent
 
-
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+  (set-frame-parameter (selected-frame) 'alpha '90)
 #+END_SRC
